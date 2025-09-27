@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>index2.html</title>
+
+    <style>
+        #cnv {
+            border: 2px solid black;
+        }
+    </style>
+</head>
+
+<body>
+    <canvas id="cnv" width="200" height="200"></canvas>
+
+    <script>
+        let canvas
+
+        function gambar_titik(imageData, x, y, r, g, b) {
+            let index
+            index = 4 * (Math.ceil(x) + (Math.ceil(y) * canvas.width))
+            imageData.data[index] = r
+            imageData.data[index + 1] = g
+            imageData.data[index + 2] = b
+            imageData.data[index + 3] = 255
+        }
+
+        function dda_line(x1, y1, x2, y2, r, g, b) {
+            let dx = x2 - x1
+            let dy = y2 - y1
+
+            if (Math.abs(dx) > Math.abs(dy)) {
+                if (x2 > x1) {
+                    let y = y1
+                    for (let x = x1; x < x2; x++) {
+                        y = y + dy / Math.abs(dx)
+                        gambar_titik(imageData, x, y, r, g, b)
+                    }
+                } else {
+                    let y = y1
+                    for (let x = x1; x > x2; x--) {
+                        y = y + dy / Math.abs(dx)
+                        gambar_titik(imageData, x, y, r, g, b)
+                    }
+                }
+            } else {
+                if (y2 > y1) {
+                    let x = x1
+                    for (let y = y1; y < y2; y++) {
+                        x = x + dx / Math.abs(dy)
+                        gambar_titik(imageData, x, y, r, g, b)
+                    }
+                } else {
+                    let x = x1
+                    for (let y = y1; y > y2; y--) {
+                        x = x + dx / Math.abs(dy)
+                        gambar_titik(imageData, x, y, r, g, b)
+                    }
+                }
+            }
+        }
+
+        function gambar_kotak(x, y) {
+            for (let i = x; i < x + 10; i++) {
+                for (let j = y; j < y + 10; j++) {
+                    gambar_titik(imageData, i - 5, j - 5, 255, 0, 0)
+                }
+            }
+            ctx.putImageData(imageData, 0, 0)
+        }
+
+        canvas = document.querySelector("#cnv")
+
+        let ctx
+        ctx = canvas.getContext("2d")
+        let imageData = ctx.getImageData(0, 0, canvas.width, canvas.height)
+
+        let clicked = false
+        let x1 = 0, y1 = 0
+        let x2 = 0, y2 = 0
+        canvas.addEventListener('click', (e) => {
+            let rect = canvas.getBoundingClientRect()
+            let x = e.clientX - rect.left
+            let y = e.clientY - rect.top
+
+            if (clicked === false) {
+                x1 = x
+                y1 = y
+                clicked = true
+                gambar_kotak(x, y)
+            } else {
+                x2 = x
+                y2 = y
+                dda_line(x1, y1, x2, y2, 0, 0, 0)
+                ctx.putImageData(imageData, 0, 0)
+                x1 = x2
+                y1 = y2
+                gambar_kotak(x, y)
+            }
+        })
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>1</title>
+    <style>
+        #canvas1 {
+            border: 2px solid black;
+        }
+    </style>
+</head>
+
+<body>
+    <canvas id="canvas1" width="500" height="500"></canvas>
+    <script>
+        let canvas
+
+        function gambar_titik(imageData, x, y, r, g, b) {
+            let index
+            index = 4 * (x + (y * canvas.width))
+            imageData.data[index] = r
+            imageData.data[index + 1] = g
+            imageData.data[index + 2] = b
+            imageData.data[index + 3] = 255
+        }
+
+        canvas = document.querySelector("#canvas1")
+
+        let ctx
+        ctx = canvas.getContext("2d")
+        let imageData = ctx.getImageData(0, 0, canvas.width, canvas.height)
+
+        gambar_titik(imageData, 100, 100, 255, 0, 0)
+
+        ctx.putImageData(imageData, 0, 0) 
+    </script>
+</body>
+
+</html>
