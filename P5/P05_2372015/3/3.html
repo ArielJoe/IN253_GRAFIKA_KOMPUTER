@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nomor 3 - Predator vs Prey</title>
+    <!-- Nama: Ariel -->
+    <!-- NRP: 2372015 -->
+    <style>
+        #canvas1 {
+            border: 3px solid black;
+        }
+
+        #status {
+            margin-top: 10px;
+            font-family: Arial;
+            font-size: 18px;
+        }
+    </style>
+</head>
+
+<body>
+    <canvas id="canvas1" width="800" height="600"></canvas>
+    <div id="status">Prey tersisa: <span id="preyCount">25</span></div>
+    <script src="/lib.js"></script>
+    <script>
+        var cnv = document.querySelector("#canvas1");
+        var context1 = cnv.getContext("2d");
+
+        let preys = [];
+        let predators = [];
+        let radius = 8;
+        let captureDistance = 8;
+
+        // Inisialisasi 25 prey
+        for (let i = 0; i < 25; i++) {
+            preys.push({
+                x: Math.random() * (cnv.width - 2 * radius) + radius,
+                y: Math.random() * (cnv.height - 2 * radius) + radius,
+                radius: radius
+            });
+        }
+
+        // Inisialisasi 10 predator
+        for (let i = 0; i < 10; i++) {
+            predators.push({
+                x: Math.random() * (cnv.width - 2 * radius) + radius,
+                y: Math.random() * (cnv.height - 2 * radius) + radius,
+                radius: radius
+            });
+        }
+
+        function getDistance(p1, p2) {
+            let dx = p2.x - p1.x;
+            let dy = p2.y - p1.y;
+            return Math.sqrt(dx * dx + dy * dy);
+        }
+
+        function findClosestPrey(predator) {
+            if (preys.length === 0) return null;
+
+            let closest = preys[0];
+            let minDistance = getDistance(predator, closest);
+
+            for (let i = 1; i < preys.length; i++) {
+                let distance = getDistance(predator, preys[i]);
+                if (distance < minDistance) {
+                    minDistance = distance;
+                    closest = preys[i];
+                }
+            }
+
+            return closest;
+        }
+
+        function animate() {
+            if (preys.length === 0) {
+                context1.fillStyle = "black";
+                context1.font = "30px Arial";
+                context1.fillText("Semua prey tertangkap!", cnv.width / 2 - 150, cnv.height / 2);
+                return;
+            }
+
+            context1.clearRect(0, 0, cnv.width, cnv.height);
+            let imageData = context1.getImageData(0, 0, cnv.width, cnv.height);
+
+            // Update prey
+            for (let prey of preys) {
+                let randomMove = {
+                    x: (Math.random() - 0.5) * 3,
+                    y: (Math.random() - 0.5) * 3
+                };
+
+                let newPos = translasi(prey, randomMove);
+
+                if (newPos.x >= radius && newPos.x <= cnv.width - radius) {
+                    prey.x = newPos.x;
+                }
+                if (newPos.y >= radius && newPos.y <= cnv.height - radius) {
+                    prey.y = newPos.y;
+                }
+            }
+
+            // Update predator
+            for (let predator of predators) {
+                let closestPrey = findClosestPrey(predator);
+
+                if (closestPrey) {
+                    let movement = translate_point(predator, closestPrey);
+                    let newPos = translasi(predator, movement);
+
+                    if (newPos.x >= radius && newPos.x <= cnv.width - radius) {
+                        predator.x = newPos.x;
+                    }
+                    if (newPos.y >= radius && newPos.y <= cnv.height - radius) {
+                        predator.y = newPos.y;
+                    }
+                }
+            }
+
+            // Cek tangkapan
+            for (let i = preys.length - 1; i >= 0; i--) {
+                for (let predator of predators) {
+                    let distance = getDistance(preys[i], predator);
+                    if (distance < captureDistance) {
+                        preys.splice(i, 1);
+                        break;
+                    }
+                }
+            }
+
+            // Gambar prey
+            for (let prey of preys) {
+                polar_circle2(imageData, prey.x, prey.y, prey.radius, 0, 0, 255);
+                floodFillStack(imageData, prey.x, prey.y, 0, 0, 255);
+            }
+
+            // Gambar predator
+            for (let predator of predators) {
+                polar_circle2(imageData, predator.x, predator.y, predator.radius, 255, 0, 0);
+                floodFillStack(imageData, predator.x, predator.y, 255, 0, 0);
+            }
+
+            context1.putImageData(imageData, 0, 0);
+
+            // Update status
+            document.getElementById('preyCount').textContent = preys.length;
+
+            requestAnimationFrame(animate);
+        }
+
+        animate();
+    </script>
+</body>
+
+</html>

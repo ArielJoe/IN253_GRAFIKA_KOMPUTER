@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>nomor 3</title>
+    <style>
+        #cnv {
+            border: 2px solid black;
+        }
+    </style>
+</head>
+
+<body>
+    <canvas id="cnv" width="500" height="500"></canvas>
+
+    <script src="lib.js"></script>
+    <script>
+        let canvas
+        canvas = document.querySelector("#cnv")
+
+        let ctx
+        ctx = canvas.getContext("2d")
+
+        let imageData = ctx.getImageData(0, 0, canvas.width, canvas.height)
+
+        let titikKlik = []
+
+        cnv.addEventListener("click", function (e) {
+            let rect = cnv.getBoundingClientRect()
+            let x = Math.floor(e.clientX - rect.left)
+            let y = Math.floor(e.clientY - rect.top)
+
+            titikKlik.push({ x, y })
+
+            if (titikKlik.length >= 3) {
+                let p1 = titikKlik[titikKlik.length - 3]
+                let p2 = titikKlik[titikKlik.length - 2]
+                let p3 = titikKlik[titikKlik.length - 1]
+
+                polygon(imageData, [p1, p2, p3], 255, 0, 0)
+
+                let fillColor = {
+                    r: getRandomNumber(0, 255),
+                    g: getRandomNumber(0, 255),
+                    b: getRandomNumber(0, 255)
+                }
+
+                let midX = Math.floor((p1.x + p2.x + p3.x) / 3)
+                let midY = Math.floor((p1.y + p2.y + p3.y) / 3)
+
+                floodFillStack(imageData, midX, midY, { r: 0, g: 0, b: 0 }, fillColor)
+
+                ctx.putImageData(imageData, 0, 0)
+            }
+        })
+    </script>
+</body>
+
+</html>

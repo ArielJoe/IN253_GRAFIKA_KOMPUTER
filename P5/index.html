@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Transformasi2D</title>
+    <style>
+        #canvas1 {
+            border: 3px solid black;
+        }
+    </style>
+
+</head>
+
+<body>
+    <canvas id="canvas1" width="800" height="600"></canvas>
+    <script src="script.js"></script>
+    <script>
+        var cnv = document.querySelector("#canvas1");
+
+        var context1;
+        context1 = cnv.getContext("2d");
+        var imageData = context1.getImageData(0, 0, cnv.width, cnv.height);
+
+        let point_array = [
+            { x: 100, y: 100 },
+            { x: 150, y: 150 },
+            { x: 50, y: 150 }
+        ]
+
+        polygon(imageData, point_array, 255, 0, 0);
+
+        let point_array2 = []
+        point_array2.push(translasi(point_array[0], { x: 200, y: 0 }))
+        point_array2.push(translasi(point_array[1], { x: 200, y: 0 }))
+        point_array2.push(translasi(point_array[2], { x: 200, y: 0 }))
+
+        polygon(imageData, point_array2, 0, 0, 255);
+
+        let point_array3 = []
+        point_array3.push(skala(point_array[0], { x: 2, y: 2 }))
+        point_array3.push(skala(point_array[1], { x: 2, y: 2 }))
+        point_array3.push(skala(point_array[2], { x: 2, y: 2 }))
+
+        polygon(imageData, point_array3, 0, 255, 0);
+
+        let point_array4 = []
+        for (let i = 0; i < 10; i++) {
+            for (let j = 0; j < 3; j++) {
+                point_array4.push(rotasi(point_array[j], Math.PI / i))
+            }
+            polygon(imageData, point_array4, 0, 255, 0);
+            point_array4 = []
+        }
+
+        point_array4.push(rotasi(point_array[0], Math.PI / 8))
+        point_array4.push(rotasi(point_array[1], Math.PI / 8))
+        point_array4.push(rotasi(point_array[2], Math.PI / 8))
+
+        polygon(imageData, point_array4, 0, 255, 0);
+
+        let point_array5 = []
+        point_array5.push(rotasiFP(point_array[0], { x: 100, y: 100 }, Math.PI / 8))
+        point_array5.push(rotasiFP(point_array[1], { x: 100, y: 100 }, Math.PI / 8))
+        point_array5.push(rotasiFP(point_array[2], { x: 100, y: 100 }, Math.PI / 8))
+
+        polygon(imageData, point_array5, 0, 0, 255);
+
+        let point_array6 = []
+        point_array6.push(skalaFP(point_array[0], { x: 50, y: 150 }, { x: 2, y: 2 }))
+        point_array6.push(skalaFP(point_array[1], { x: 50, y: 150 }, { x: 2, y: 2 }))
+        point_array6.push(skalaFP(point_array[2], { x: 50, y: 150 }, { x: 2, y: 2 }))
+
+        polygon(imageData, point_array6, 0, 0, 0);
+
+        let point_array7 = translasi_array(point_array, { x: 300, y: 0 })
+        polygon(imageData, point_array7, 255, 0, 255);
+
+        context1.putImageData(imageData, 0, 0);
+    </script>
+</body>
+
+</html>

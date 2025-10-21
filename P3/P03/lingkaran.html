@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>lingkaran</title>
+
+    <style>
+        #cnv {
+            border: 2px solid black;
+        }
+    </style>
+</head>
+
+<body>
+    <canvas id="cnv" width="300" height="300"></canvas>
+
+    <script>
+        let canvas
+        canvas = document.querySelector("#cnv")
+
+        let ctx
+        ctx = canvas.getContext("2d")
+
+        let imageData = ctx.getImageData(0, 0, canvas.width, canvas.height)
+
+        gambar_bunga(imageData, 150, 150, 100, 100, 5, 255, 0, 0, 1)
+
+        function gambar_titik(imageData, x, y, r, g, b) {
+            let index
+            index = 4 * (Math.ceil(x) + (Math.ceil(y) * canvas.width))
+            imageData.data[index] = r
+            imageData.data[index + 1] = g
+            imageData.data[index + 2] = b
+            imageData.data[index + 3] = 255
+        }
+
+        function gambar_bunga(imageData, xc, yc, rx, ry, kelopak, r, g, b, delay = 10) {
+            let theta = 0;
+            const interval = setInterval(() => {
+                if (theta >= 2 * Math.PI) {
+                    clearInterval(interval);
+                    return;
+                }
+                let x = xc + rx * Math.cos(kelopak * theta) * Math.cos(theta);
+                let y = yc + ry * Math.cos(kelopak * theta) * Math.sin(theta);
+                gambar_titik(imageData, x, y, r, g, b);
+                ctx.putImageData(imageData, 0, 0)
+                theta += 0.01;
+            }, delay);
+        }
+
+        function lingkaran(imageData, xc, yc, radius, r, g, b) {
+            for (let x = xc - radius; x < xc + radius; x++) {
+                let y = yc + Math.sqrt(Math.pow(radius, 2) - Math.pow(x - xc, 2))
+                gambar_titik(imageData, Math.ceil(x), Math.ceil(y), r, g, b)
+
+                y = yc - Math.sqrt(Math.pow(radius, 2) - Math.pow(x - xc, 2))
+                gambar_titik(imageData, Math.ceil(x), Math.ceil(y), r, g, b)
+            }
+
+            for (let x = xc - radius; x < xc + radius; x++) {
+                let y = yc + Math.sqrt(Math.pow(radius, 2) - Math.pow(x - xc, 2))
+                gambar_titik(imageData, Math.ceil(y), Math.ceil(x), r, g, b)
+
+                y = yc - Math.sqrt(Math.pow(radius, 2) - Math.pow(x - xc, 2))
+                gambar_titik(imageData, Math.ceil(y), Math.ceil(x), r, g, b)
+            }
+        }
+    </script>
+
+</body>
+
+</html>

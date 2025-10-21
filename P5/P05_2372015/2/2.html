@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nomor 2 - Sistem Planet dan Bulan</title>
+    <!-- Nama: Ariel -->
+    <!-- NRP: 2372015 -->
+    <style>
+        #canvas1 {
+            border: 3px solid black;
+            background-color: #000;
+        }
+    </style>
+</head>
+
+<body>
+    <canvas id="canvas1" width="800" height="600"></canvas>
+    <script src="/lib.js"></script>
+    <script>
+        var cnv = document.querySelector("#canvas1");
+        var context1 = cnv.getContext("2d");
+
+        let sunPos = { x: cnv.width / 2, y: cnv.height / 2 };
+        let sunRadius = 30;
+
+        let planets = [
+            {
+                distance: 100,
+                radius: 12,
+                r: 0, g: 100, b: 255,
+                speed: 0.02,
+                angle: 0,
+                moonDistance: 25,
+                moonRadius: 5,
+                moonSpeed: 0.05,
+                moonAngle: 0
+            },
+            {
+                distance: 160,
+                radius: 15,
+                r: 255, g: 100, b: 0,
+                speed: 0.015,
+                angle: Math.PI / 3,
+                moonDistance: 30,
+                moonRadius: 5,
+                moonSpeed: 0.06,
+                moonAngle: 0
+            },
+            {
+                distance: 220,
+                radius: 10,
+                r: 100, g: 255, b: 100,
+                speed: 0.01,
+                angle: Math.PI * 2 / 3,
+                moonDistance: 20,
+                moonRadius: 4,
+                moonSpeed: 0.07,
+                moonAngle: 0
+            }
+        ];
+
+        function animate() {
+            context1.clearRect(0, 0, cnv.width, cnv.height);
+            let imageData = context1.getImageData(0, 0, cnv.width, cnv.height);
+
+            // Gambar matahari
+            polar_circle2(imageData, sunPos.x, sunPos.y, sunRadius, 255, 255, 0);
+            floodFillStack(imageData, sunPos.x, sunPos.y, 255, 255, 0);
+
+            // Gambar planet dan bulan
+            for (let planet of planets) {
+                // Update sudut planet
+                planet.angle += planet.speed;
+
+                // Hitung posisi planet menggunakan rotasiFP
+                let planetInitialPos = { x: sunPos.x + planet.distance, y: sunPos.y };
+                let planetPos = rotasiFP(planetInitialPos, sunPos, planet.angle);
+
+                // Gambar planet
+                polar_circle2(imageData, planetPos.x, planetPos.y, planet.radius, planet.r, planet.g, planet.b);
+                floodFillStack(imageData, planetPos.x, planetPos.y, planet.r, planet.g, planet.b);
+
+                // Update sudut bulan
+                planet.moonAngle += planet.moonSpeed;
+
+                // Hitung posisi bulan menggunakan rotasiFP (relatif terhadap planet)
+                let moonInitialPos = { x: planetPos.x + planet.moonDistance, y: planetPos.y };
+                let moonPos = rotasiFP(moonInitialPos, planetPos, planet.moonAngle);
+
+                // Gambar bulan
+                polar_circle2(imageData, moonPos.x, moonPos.y, planet.moonRadius, 150, 150, 150);
+                floodFillStack(imageData, moonPos.x, moonPos.y, 150, 150, 150);
+            }
+
+            context1.putImageData(imageData, 0, 0);
+            requestAnimationFrame(animate);
+        }
+
+        animate();
+    </script>
+</body>
+
+</html>

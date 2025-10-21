@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nomor 1 - Bola Warna Pantul</title>
+    <!-- Nama: Ariel -->
+    <!-- NRP: 2372015 -->
+    <style>
+        #canvas1 {
+            border: 3px solid black;
+        }
+    </style>
+</head>
+
+<body>
+    <canvas id="canvas1" width="800" height="600"></canvas>
+    <script src="/lib.js"></script>
+    <script>
+        var cnv = document.querySelector("#canvas1");
+        var context1 = cnv.getContext("2d");
+
+        let balls = [];
+        let numBalls = 5;
+        let radius = 15;
+
+        // Bola merah
+        for (let i = 0; i < numBalls; i++) {
+            balls.push({
+                x: Math.random() * (cnv.width - 2 * radius) + radius,
+                y: Math.random() * (cnv.height - 2 * radius) + radius,
+                vx: (Math.random() - 0.5) * 4,
+                vy: (Math.random() - 0.5) * 4,
+                r: 255, g: 0, b: 0,
+                radius: radius
+            });
+        }
+
+        // Bola hijau
+        for (let i = 0; i < numBalls; i++) {
+            balls.push({
+                x: Math.random() * (cnv.width - 2 * radius) + radius,
+                y: Math.random() * (cnv.height - 2 * radius) + radius,
+                vx: (Math.random() - 0.5) * 4,
+                vy: (Math.random() - 0.5) * 4,
+                r: 0, g: 255, b: 0,
+                radius: radius
+            });
+        }
+
+        // Bola biru
+        for (let i = 0; i < numBalls; i++) {
+            balls.push({
+                x: Math.random() * (cnv.width - 2 * radius) + radius,
+                y: Math.random() * (cnv.height - 2 * radius) + radius,
+                vx: (Math.random() - 0.5) * 4,
+                vy: (Math.random() - 0.5) * 4,
+                r: 0, g: 0, b: 255,
+                radius: radius
+            });
+        }
+
+        function animate() {
+            context1.clearRect(0, 0, cnv.width, cnv.height);
+            let imageData = context1.getImageData(0, 0, cnv.width, cnv.height);
+
+            for (let ball of balls) {
+                // Update posisi
+                ball.x += ball.vx;
+                ball.y += ball.vy;
+
+                // Cek tabrakan
+                if (ball.x - ball.radius <= 0 || ball.x + ball.radius >= cnv.width) {
+                    ball.vx *= -1;
+                    if (ball.x - ball.radius <= 0) ball.x = ball.radius;
+                    if (ball.x + ball.radius >= cnv.width) ball.x = cnv.width - ball.radius;
+                }
+
+                if (ball.y - ball.radius <= 0 || ball.y + ball.radius >= cnv.height) {
+                    ball.vy *= -1;
+                    if (ball.y - ball.radius <= 0) ball.y = ball.radius;
+                    if (ball.y + ball.radius >= cnv.height) ball.y = cnv.height - ball.radius;
+                }
+
+                polar_circle2(imageData, ball.x, ball.y, ball.radius, ball.r, ball.g, ball.b);
+
+                floodFillStack(imageData, ball.x, ball.y, ball.r, ball.g, ball.b);
+            }
+
+            context1.putImageData(imageData, 0, 0);
+            requestAnimationFrame(animate);
+        }
+
+        animate();
+    </script>
+</body>
+
+</html>

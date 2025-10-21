@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Obat Nyamuk</title>
+
+    <style>
+        #cnv {
+            border: 2px solid black;
+        }
+    </style>
+</head>
+
+<body>
+    <canvas id="cnv" width="300" height="300"></canvas>
+
+    <script src="lib.js"></script>
+    <script>
+        let canvas
+        canvas = document.querySelector("#cnv")
+
+        let ctx
+        ctx = canvas.getContext("2d")
+
+        let imageData = ctx.getImageData(0, 0, canvas.width, canvas.height)
+
+        obat_nyamuk(imageData, 150, 150, 255, 0, 0)
+        ctx.putImageData(imageData, 0, 0)
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bunga</title>
+
+    <style>
+        #cnv {
+            border: 2px solid black;
+        }
+    </style>
+</head>
+
+<body>
+    <canvas id="cnv" width="600" height="300"></canvas>
+    <div style="display: flex; height: 30px; align-items: center; gap: 5px;">
+        <p>Jumlah Kelopak:</p><input min="1" type="number" id="kelopak" style="width: 50px;"><button id="gambar">Gambar
+            Bunga</button>
+    </div>
+
+    <script src="lib.js"></script>
+    <script>
+        let canvas
+        canvas = document.querySelector("#cnv")
+
+        let ctx
+        ctx = canvas.getContext("2d")
+
+        let imageData = ctx.getImageData(0, 0, canvas.width, canvas.height)
+
+        document.getElementById("gambar").addEventListener("click", function () {
+            let posX = getRandomNumber(0, 600)
+            let posY = getRandomNumber(0, 300)
+            let kelopak = parseInt(document.getElementById("kelopak").value)
+            let rad = getRandomNumber(50, 100)
+            let r = getRandomNumber(0, 255)
+            let g = getRandomNumber(0, 255)
+            let b = getRandomNumber(0, 255)
+
+            bunga(imageData, posX, posY, rad, kelopak, r, g, b)
+            ctx.putImageData(imageData, 0, 0)
+        })
+    </script>
+</body>
+
+</html>

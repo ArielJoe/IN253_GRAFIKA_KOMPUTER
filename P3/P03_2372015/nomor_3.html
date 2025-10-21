@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mistletoe</title>
+
+    <style>
+        #cnv {
+            border: 2px solid black;
+        }
+    </style>
+</head>
+
+<body>
+    <canvas id="cnv" width="500" height="500"></canvas>
+
+    <script src="lib.js"></script>
+    <script>
+        let canvas
+        canvas = document.querySelector("#cnv")
+
+        let ctx
+        ctx = canvas.getContext("2d")
+
+        let imageData = ctx.getImageData(0, 0, canvas.width, canvas.height)
+
+        canvas.addEventListener("click", function (e) {
+            let rect = canvas.getBoundingClientRect()
+            let x = e.clientX - rect.left
+            let y = e.clientY - rect.top
+
+            let rad = 100
+            let r = 10
+            let g = 202
+            let b = 61
+
+            mistletoe(imageData, x, y, rad, r, g, b)
+
+            rad = 15
+            r = 255
+            g = 0
+            b = 0
+            polar(imageData, x, y, rad, r, g, b)
+            ctx.putImageData(imageData, 0, 0)
+        })
+    </script>
+</body>
+
+</html>
