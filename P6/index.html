@@ -46,15 +46,24 @@
 
         polygon(imageData, points2, 0, 255, 0);
 
+        let timer = 0;
         function draw() {
-            m = createTranslation(10, 0)
-            points2 = transform_array(points2, m)
-            polygon(imageData, points2, 0, 255, 0);
+            // for (let i = 0; i < imageData.data.length; i++) {
+            //     imageData.data[i] = 0;
+            // }
+            context1.clearRect(0, 0, cnv.width, cnv.height);
+            imageData = context1.getImageData(0, 0, cnv.width, cnv.height);
+            m = createTranslation(10, 0);
+            let r = rotation_fp(points2[0].x, points2[0].y, 0.25);
+            let hasil = multiplyMatriks(m, r);
+            points2 = transform_array(points2, hasil);
+            polygon(imageData, points2, 255, 0, 0);
             context1.putImageData(imageData, 0, 0);
             requestAnimationFrame(draw);
         }
 
         draw();
+        // setInterval(draw, 1000);
 
         context1.putImageData(imageData, 0, 0);
     </script>
