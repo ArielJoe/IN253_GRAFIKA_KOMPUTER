@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Transformasi2D</title>
+    <style>
+        #canvas1 {
+            border: 3px solid black;
+        }
+    </style>
+
+</head>
+
+<body>
+    <canvas id="canvas1" width="600" height="600"></canvas>
+    <script src="transformasi.js"></script>
+    <script src="transform_komposit.js"></script>
+    <script>
+        var cnv = document.querySelector("#canvas1");
+
+        var context1;
+        context1 = cnv.getContext("2d");
+        var imageData = context1.getImageData(0, 0, cnv.width, cnv.height);
+
+        let points = [
+            {
+                x: 100,
+                y: 100,
+            },
+            {
+                x: 150,
+                y: 150,
+            },
+            {
+                x: 50,
+                y: 150,
+            },
+        ];
+
+        polygon(imageData, points, 0, 0, 255);
+
+        let m = rotation_fp(150, 150, Math.PI / 7);
+        let points2 = transform_array(points, m);
+
+        polygon(imageData, points2, 0, 255, 0);
+
+        function draw() {
+            m = createTranslation(10, 0)
+            points2 = transform_array(points2, m)
+            polygon(imageData, points2, 0, 255, 0);
+            context1.putImageData(imageData, 0, 0);
+            requestAnimationFrame(draw);
+        }
+
+        draw();
+
+        context1.putImageData(imageData, 0, 0);
+    </script>
+</body>
+
+</html>
