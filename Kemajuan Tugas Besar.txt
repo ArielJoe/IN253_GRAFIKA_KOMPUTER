@@ -1,0 +1,11 @@
+Anggota Kelompok : 
+- 2372015 Ariel Jonathan Wihardja
+- 2372023 Eben Praus Yosia
+- 2372037 Rafael Yefta Wijaya
+- 2372049 Derryl Eberhard Sangaptaras Sembiring
+
+Topik Tugas Besar:
+Visualisasi Algoritma Insertion Sort
+
+Link Github:
+https://github.com/RafaelYefta32/Project-UTS-GrafKom

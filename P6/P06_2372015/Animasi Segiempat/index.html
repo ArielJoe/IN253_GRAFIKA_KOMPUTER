@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Animasi Segiempat</title>
+    <!-- Nama: Ariel -->
+    <!-- NRP: 2372015 -->
+    <style>
+        #canvas2 {
+            border: 2px solid black;
+        }
+    </style>
+</head>
+
+<body>
+    <canvas id="canvas2" width="800" height="400"></canvas>
+
+    <script src="/lib.js"></script>
+    <script src="/komposit.js"></script>
+    <script>
+        const cnv = document.getElementById("canvas2");
+        const ctx = cnv.getContext("2d");
+
+        const half = 20;
+        const kotakAwal = [
+            { x: -half, y: -half },
+            { x: half, y: -half },
+            { x: half, y: half },
+            { x: -half, y: half }
+        ];
+
+        let trajectory = [];
+        let time = 0;
+        const amplitude = 80;
+        const wavelength = 150;
+        const speed = 100;
+
+        function animate(timestamp) {
+            time = timestamp / 1000;
+            let x = (speed * time) % cnv.width;
+            let y = cnv.height / 2 + amplitude * Math.sin((2 * Math.PI / wavelength) * x);
+
+            if (trajectory.length === 0 ||
+                trajectory[trajectory.length - 1].x !== x ||
+                trajectory[trajectory.length - 1].y !== y) {
+                trajectory.push({ x, y });
+            }
+
+            const imageData = ctx.createImageData(cnv.width, cnv.height);
+
+            const slope = (2 * Math.PI * amplitude / wavelength) * Math.cos((2 * Math.PI / wavelength) * x);
+            const angle = Math.atan(slope);
+
+            const M_rot = createRotation(angle);
+            const M_trans = createTranslation(x, y);
+            const M = multiplyMatriks(M_trans, M_rot);
+
+            const kotakTransform = transform_array(kotakAwal, M);
+
+            polygon(imageData, kotakTransform, 255, 0, 0);
+
+            ctx.putImageData(imageData, 0, 0);
+
+            requestAnimationFrame(animate);
+        }
+
+        requestAnimationFrame(animate);
+    </script>
+</body>
+
+</html>

@@ -1,3 +1,6 @@
+// Nama: Ariel
+// NRP: 2372015
+
 function createIdentity() {
     let identity = [
         1, 0, 0,
@@ -89,4 +92,16 @@ function transform_array(array_titik, m) {
     }
 
     return hasil;
+}
+
+function createRegularPolygon(n, radius) {
+    let pts = [];
+    for (let i = 0; i < n; i++) {
+        let angle = (2 * Math.PI * i) / n;
+        pts.push({
+            x: radius * Math.cos(angle),
+            y: radius * Math.sin(angle)
+        });
+    }
+    return pts;
 }

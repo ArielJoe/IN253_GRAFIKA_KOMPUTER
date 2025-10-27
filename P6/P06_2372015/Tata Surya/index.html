@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tata Surya</title>
+    <!-- Nama: Ariel -->
+    <!-- NRP: 2372015 -->
+    <style>
+        #canvas3 {
+            border: 2px solid white;
+            background-color: black;
+        }
+
+        .controls {
+            margin: 10px 0;
+        }
+    </style>
+</head>
+
+<body>
+    <canvas id="canvas3" width="800" height="600"></canvas>
+    <div class="controls">
+        <button id="playBtn">Play</button>
+        <button id="pauseBtn">Pause</button>
+        <button id="resetBtn">Reset</button>
+    </div>
+
+    <script src="/lib.js"></script>
+    <script src="/komposit.js"></script>
+    <script>
+        const cnv = document.getElementById("canvas3");
+        const ctx = cnv.getContext("2d");
+        const centerX = cnv.width / 2;
+        const centerY = cnv.height / 2;
+
+        const sunShape = createRegularPolygon(12, 30);
+        const planetBase = createRegularPolygon(8, 10);
+        const moonBase = createRegularPolygon(6, 5);
+
+        const planets = [
+            { dist: 80, radius: 8, period: 2, color: [255, 0, 0], moon: false },
+            { dist: 120, radius: 12, period: 3, color: [0, 255, 0], moon: true },
+            { dist: 170, radius: 10, period: 4, color: [0, 0, 255], moon: false },
+            { dist: 220, radius: 14, period: 6, color: [0, 255, 255], moon: true },
+            { dist: 270, radius: 9, period: 8, color: [255, 0, 255], moon: false }
+        ];
+
+        let isPlaying = true;
+        let time = 0;
+        let lastTime = 0;
+
+        document.getElementById("playBtn").onclick = () => isPlaying = true;
+        document.getElementById("pauseBtn").onclick = () => isPlaying = false;
+        document.getElementById("resetBtn").onclick = () => { time = 0; };
+
+        function drawOrbit(imageData, cx, cy, radius, r, g, b) {
+            const orbitPoints = createRegularPolygon(60, radius);
+            const orbitTransformed = orbitPoints.map(p => ({ x: p.x + cx, y: p.y + cy }));
+            polygon(imageData, orbitTransformed, r, g, b);
+        }
+
+        function drawObject(imageData, shape, x, y, scale, angle, color) {
+            const [r, g, b] = color;
+            const M_scale = createScale(scale, scale);
+            const M_rot = createRotation(angle);
+            const M_trans = createTranslation(x, y);
+            let M = multiplyMatriks(M_rot, M_scale);
+            M = multiplyMatriks(M_trans, M);
+            const transformed = transform_array(shape, M);
+            polygon(imageData, transformed, r, g, b);
+        }
+
+        function animate(currentTime) {
+            if (isPlaying) {
+                const deltaTime = (currentTime - lastTime) / 1000;
+                lastTime = currentTime;
+                time += deltaTime;
+            }
+
+            const imageData = ctx.createImageData(cnv.width, cnv.height);
+
+            planets.forEach(p => {
+                drawOrbit(imageData, centerX, centerY, p.dist, 255, 255, 255);
+            });
+
+            drawObject(imageData, sunShape, centerX, centerY, 1, time * 0.3, [255, 255, 0]);
+
+            planets.forEach(p => {
+                const angle = (2 * Math.PI * time) / p.period;
+                const x = centerX + p.dist * Math.cos(angle);
+                const y = centerY + p.dist * Math.sin(angle);
+                drawObject(imageData, planetBase, x, y, p.radius / 10, angle, p.color);
+
+                if (p.moon) {
+                    const moonAngle = (2 * Math.PI * time) / 1.2;
+                    const mx = x + 25 * Math.cos(moonAngle);
+                    const my = y + 25 * Math.sin(moonAngle);
+                    drawObject(imageData, moonBase, mx, my, 1, moonAngle, [200, 200, 200]);
+                }
+            });
+
+            ctx.putImageData(imageData, 0, 0);
+            requestAnimationFrame(animate);
+        }
+
+        requestAnimationFrame(animate);
+    </script>
+</body>
+
+</html>
