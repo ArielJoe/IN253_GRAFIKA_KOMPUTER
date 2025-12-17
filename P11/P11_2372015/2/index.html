@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Permainan Bayangan</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+        }
+    </style>
+    <!-- 2372015 - Ariel -->
+</head>
+
+<body>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+    <script>
+        // Setup Scene
+        const scene = new THREE.Scene();
+        scene.background = new THREE.Color(0x101010);
+        scene.fog = new THREE.Fog(0x101010, 20, 100);
+
+        const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 100);
+        camera.position.set(15, 12, 15);
+        camera.lookAt(0, 0, 0);
+
+        const renderer = new THREE.WebGLRenderer({ antialias: true });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.shadowMap.enabled = true;
+        renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+        document.body.appendChild(renderer.domElement);
+
+        // Orbit Controls
+        const controls = new THREE.OrbitControls(camera, renderer.domElement);
+        controls.enableDamping = true;
+
+        // Lantai
+        const planeGeo = new THREE.PlaneGeometry(100, 100);
+        const planeMat = new THREE.MeshPhongMaterial({ color: 0x222222, side: THREE.DoubleSide });
+        const plane = new THREE.Mesh(planeGeo, planeMat);
+        plane.rotation.x = -Math.PI / 2;
+        plane.position.y = -3;
+        plane.receiveShadow = true;
+        scene.add(plane);
+
+        // Light
+        const spotLight = new THREE.SpotLight(0xffffff, 1.5);
+        spotLight.position.set(0, 30, 0);
+        spotLight.angle = Math.PI / 8;
+        spotLight.penumbra = 0.05;
+        spotLight.castShadow = true;
+        spotLight.shadow.mapSize.width = 2048;
+        spotLight.shadow.mapSize.height = 2048;
+        scene.add(spotLight);
+
+        scene.add(new THREE.AmbientLight(0x404040));
+
+        // Grid Hati
+        const pattern = [
+            [0, 0, 0, 0, 1, 1, 0, 0, 0, 1, 1, 0, 0, 0, 0],
+            [0, 0, 0, 1, 1, 1, 1, 0, 1, 1, 1, 1, 0, 0, 0],
+            [0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0],
+            [0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0],
+            [0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0],
+            [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+            [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+            [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+            [0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0],
+            [0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0],
+            [0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0],
+            [0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0]
+        ];
+
+        const boxSize = 0.5;
+        const group = new THREE.Group();
+        const geometry = new THREE.BoxGeometry(boxSize, boxSize, boxSize);
+
+        for (let z = 0; z < pattern.length; z++) {
+            for (let x = 0; x < pattern[z].length; x++) {
+                if (pattern[z][x] === 1) {
+                    // Warna merah/pink
+                    const color = new THREE.Color().setHSL(0.95 + (Math.random() * 0.1), 0.8, 0.4);
+                    const material = new THREE.MeshPhongMaterial({ color: color });
+                    const cube = new THREE.Mesh(geometry, material);
+
+                    // Posisi X, Z
+                    const posX = (x - pattern[0].length / 2) * boxSize;
+                    const posZ = (z - pattern.length / 2) * boxSize;
+
+                    // Posisi Y acak (0-4)
+                    const randomY = Math.random() * 4;
+
+                    cube.position.set(posX, randomY, posZ);
+
+                    // Rotasi
+                    cube.rotation.set(
+                        Math.random() * 0.1,
+                        Math.random() * 0.1,
+                        Math.random() * 0.1
+                    );
+
+                    cube.castShadow = true;
+                    cube.receiveShadow = true;
+
+                    group.add(cube);
+                }
+            }
+        }
+
+        group.position.y = 1;
+        scene.add(group);
+
+        function animate() {
+            requestAnimationFrame(animate);
+            controls.update();
+            renderer.render(scene, camera);
+        }
+
+        animate();
+
+        window.addEventListener('resize', () => {
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+        });
+    </script>
+</body>
+
+</html>
